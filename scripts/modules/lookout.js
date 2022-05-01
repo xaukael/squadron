@@ -174,7 +174,16 @@ export class Lookout {
   static async addFollower(leaderId, followerId, sceneId, 
     orientation = squadron.CONST.QUERY,
     {elevation = true, snap = true} = {}) {
-
+    // check for always follow setting?
+    let s = game.scenes.get(sceneId) || canvas.scene;
+    let l = s.tokens.find(t=>t.id==leaderId).object;
+    let f = s.tokens.find(t=>t.id==followerId).object;
+    let dx = l.x - f.x;
+    let dy = l.y - f.y;
+    if (dx < 0 && Math.abs(dx) >= Math.abs(dy)) orientation = squadron.CONST.LEFT;
+    if (dx > 0 && Math.abs(dx) >= Math.abs(dy)) orientation = squadron.CONST.RIGHT;
+    if (dy < 0 && Math.abs(dx) <= Math.abs(dy)) orientation = squadron.CONST.UP;
+    if (dy > 0 && Math.abs(dx) <= Math.abs(dy)) orientation = squadron.CONST.DOWN;
     /* define default result based on inputs */
     let result = {buttons: orientation, inputs: [elevation, snap]}
     if (orientation === squadron.CONST.QUERY) {
